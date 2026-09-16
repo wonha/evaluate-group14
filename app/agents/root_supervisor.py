@@ -1,13 +1,33 @@
 """Root Supervisor Agent built on Google ADK Multi-Agent Topology."""
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
+try:
+    from google.adk.agents import BaseAgent
+    BaseParent = BaseAgent
+except Exception:
+    try:
+        from pydantic import BaseModel
+        BaseParent = BaseModel
+    except Exception:
+        class BaseParent:
+            model_fields = {}
+
 from app.guardrails.model_armor import model_armor
 from app.tools.policy_rag import policy_rag
 from app.tools.workweek import workweek_tools
 from app.tools.service_immediately import itsm_tools
 
-class RootSupervisorAgent:
-    def __init__(self):
-        self.app_name = "hr_it_enterprise_agent"
+class RootSupervisorAgent(BaseParent):
+    name: str = 'evaluate_group14'
+    description: str = 'Enterprise HR & IT Autonomous Assistant'
+    model: str = 'gemini-1.5-pro'
+    instruction: str = 'Enterprise HR & IT Assistant'
+    tools: list = []
+    model_fields = {'name': None, 'description': None, 'model': None, 'instruction': None, 'tools': None}
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.app_name = 'evaluate_group14'
+
 
     def execute_turn(self, user_id: str, user_prompt: str, session_id: str = "sess-01") -> Dict[str, Any]:
         # 1. Model Armor Input Safety Guardrail (< 300ms)
