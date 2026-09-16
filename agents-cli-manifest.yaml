@@ -1,0 +1,57 @@
+schema_version: '1.0'
+name: hr-it-enterprise-agent
+display_name: HR & IT Enterprise Agentic Assistant
+description: Zero-trust virtual assistant orchestrating WorkWeek HCM, ServiceImmediately
+  ITSM, and Vertex AI Policy RAG
+version: 2.0.0
+runtime:
+  framework: google-adk
+  entrypoint: app.main:app
+  python_version: '3.11'
+  environment:
+    MODEL_NAME: gemini-1.5-pro-002
+    FALLBACK_MODEL_NAME: gemini-1.5-flash-002
+    TARGET_PROJECT: argolis-hr-agent
+    MOCK_SAAS_URL: https://mock-saas.aishprabhat.demo.altostrat.com
+    SWAGGER_DOCS: https://mock-saas.aishprabhat.demo.altostrat.com/docs
+    REDOC_DOCS: https://mock-saas.aishprabhat.demo.altostrat.com/redoc
+    MCP_AUTH_TOKEN: mcp_RtK1RAZCYy32OtYHnJcgYCVx_tBZrOPsnrGEk9wstA4
+    GUARDRAIL_SLA_MS: 300
+    MAX_RESPONSE_LATENCY_SEC: 10.0
+integrations:
+- name: workweek_hcm
+  protocol: mcp
+  base_url: https://mock-saas.aishprabhat.demo.altostrat.com
+  auth_type: bearer
+  token: mcp_RtK1RAZCYy32OtYHnJcgYCVx_tBZrOPsnrGEk9wstA4
+  rate_limit_qps: 50
+  tools:
+  - get_employee_profile
+  - update_contact_info
+  - get_leave_balances
+  - submit_leave_request
+  - cancel_leave_request
+- name: service_immediately_itsm
+  protocol: mcp
+  base_url: https://mock-saas.aishprabhat.demo.altostrat.com
+  auth_type: bearer
+  token: mcp_RtK1RAZCYy32OtYHnJcgYCVx_tBZrOPsnrGEk9wstA4
+  rate_limit_qps: 30
+  tools:
+  - get_ticket_details
+  - create_incident_ticket
+  - add_ticket_comment
+  - update_ticket_status
+- name: vertex_ai_search
+  protocol: native_gcp
+  datastore_id: hr-policies-datastore
+  sync_sla_min: 5
+  grounding_threshold: 0.85
+evaluations:
+  config: tests/eval/eval_config.yaml
+  report: tests/eval/evaluation_report.md
+  datasets_dir: tests/eval/datasets
+  benchmark_server: go/elevate-apac-m3-assess
+  default_datasets:
+  - eval-data.json
+  - eval-data2.json

@@ -1,0 +1,172 @@
+[
+  {
+    "id": "TC-CROSS-UC-2.1",
+    "name": "UC-2.1 Equipment Procurement",
+    "description": "Cross-system orchestration: Policy RAG verification -> WorkWeek remote profile check -> ServiceImmediately hardware ticket creation",
+    "sla_target_sec": 10.0,
+    "turns": [
+      {
+        "turn_index": 1,
+        "user_prompt": "I just read the remote work policy and saw I'm eligible for a home office monitor. Can you verify my remote status and order one for me?",
+        "expected_trajectory": [
+          {
+            "step": 1,
+            "specialist": "policy_rag_specialist",
+            "tool": "vertex_ai_search.search_policy_documents",
+            "query": "remote work home office monitor eligibility"
+          },
+          {
+            "step": 2,
+            "specialist": "workweek_hcm_specialist",
+            "tool": "workweek.get_employee_profile",
+            "endpoint": "https://mock-saas.aishprabhat.demo.altostrat.com/api/v1/workweek/profile",
+            "assert_state": {
+              "is_remote": true
+            }
+          },
+          {
+            "step": 3,
+            "specialist": "serviceimmediately_itsm_specialist",
+            "tool": "serviceimmediately.create_incident_ticket",
+            "endpoint": "https://mock-saas.aishprabhat.demo.altostrat.com/api/v1/itsm/incidents",
+            "arguments": {
+              "requestor_id": "EMP-1049",
+              "category": "Hardware",
+              "priority": "3 - Moderate",
+              "short_description": "Remote Monitor Procurement - EMP-1049"
+            }
+          }
+        ],
+        "expected_response_contains": [
+          "Remote Work Policy",
+          "INC-",
+          "shipping address"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "TC-CROSS-UC-2.2",
+    "name": "UC-2.2 Medical Leave & Manager Access Delegation",
+    "description": "Policy lookup for medical leave -> WorkWeek LOA submission -> ServiceImmediately mailbox delegation ticket",
+    "turns": [
+      {
+        "turn_index": 1,
+        "user_prompt": "I need to take short-term medical leave starting next Monday for 5 days. What is the process and can you set it up for me?",
+        "expected_trajectory": [
+          {
+            "step": 1,
+            "specialist": "policy_rag_specialist",
+            "tool": "vertex_ai_search.search_policy_documents",
+            "query": "short term medical leave procedure documentation"
+          },
+          {
+            "step": 2,
+            "specialist": "workweek_hcm_specialist",
+            "tool": "workweek.submit_leave_request",
+            "endpoint": "https://mock-saas.aishprabhat.demo.altostrat.com/api/v1/workweek/leave-request",
+            "arguments": {
+              "employee_id": "EMP-1049",
+              "leave_type": "Sick",
+              "work_days": 5.0
+            }
+          },
+          {
+            "step": 3,
+            "specialist": "serviceimmediately_itsm_specialist",
+            "tool": "serviceimmediately.create_incident_ticket",
+            "endpoint": "https://mock-saas.aishprabhat.demo.altostrat.com/api/v1/itsm/incidents",
+            "arguments": {
+              "category": "Access",
+              "short_description": "Medical Leave Manager Access Delegation - EMP-1049",
+              "priority": "2 - High"
+            }
+          }
+        ],
+        "expected_response_contains": [
+          "Medical Leave Policy",
+          "WW-LR-",
+          "INC-"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "TC-CROSS-UC-2.3-ROLLBACK",
+    "name": "UC-2.3 Relocation with SAGA Automated Programmatic Rollback",
+    "description": "Address update in WorkWeek followed by simulated 503 failure in ServiceImmediately, triggering automated rollback in WorkWeek",
+    "turns": [
+      {
+        "turn_index": 1,
+        "user_prompt": "I am transferring to the London office next month. Please update my address to 10 Downing Street, London, SW1A 2AA and request my building access badge.",
+        "simulate_backend_fault": {
+          "target_service": "serviceimmediately.create_incident_ticket",
+          "fault_code": 503,
+          "fault_message": "Service Unavailable after 3 retries"
+        },
+        "expected_trajectory": [
+          {
+            "step": 1,
+            "specialist": "workweek_hcm_specialist",
+            "tool": "workweek.update_contact_info",
+            "status": "SUCCESS_200_SNAPSHOT_SAVED"
+          },
+          {
+            "step": 2,
+            "specialist": "serviceimmediately_itsm_specialist",
+            "tool": "serviceimmediately.create_incident_ticket",
+            "status": "FAIL_503_EXHAUSTED_RETRIES"
+          },
+          {
+            "step": 3,
+            "specialist": "saga_coordinator",
+            "tool": "workweek.revert_contact_info",
+            "action": "AUTOMATED_PROGRAMMATIC_ROLLBACK",
+            "status": "SUCCESS_REVERTED"
+          }
+        ],
+        "expected_response_contains": [
+          "unable to complete your badge ticket",
+          "automatically rolled back",
+          "No changes were applied"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "TC-HANDOFF-AUTONOMOUS",
+    "name": "Autonomous Ticket Handoff on Missing Knowledge (Zero Abandonment)",
+    "description": "Unindexed policy topic triggers automatic P4 support ticket creation so user is never abandoned",
+    "turns": [
+      {
+        "turn_index": 1,
+        "user_prompt": "What is the corporate policy regarding pet bereavement leave and emergency veterinary expense assistance?",
+        "expected_trajectory": [
+          {
+            "step": 1,
+            "specialist": "policy_rag_specialist",
+            "tool": "vertex_ai_search.search_policy_documents",
+            "result": "GROUNDING_SCORE_BELOW_0.82"
+          },
+          {
+            "step": 2,
+            "specialist": "serviceimmediately_itsm_specialist",
+            "tool": "serviceimmediately.create_incident_ticket",
+            "endpoint": "https://mock-saas.aishprabhat.demo.altostrat.com/api/v1/itsm/incidents",
+            "arguments": {
+              "requestor_id": "EMP-1049",
+              "category": "HR General",
+              "short_description": "Unanswered Policy Inquiry: Pet bereavement and veterinary assistance",
+              "priority": "4 - Low"
+            }
+          }
+        ],
+        "expected_response_contains": [
+          "could not find an approved company policy",
+          "automatically opened a support ticket",
+          "INC-"
+        ]
+      }
+    ]
+  }
+]
