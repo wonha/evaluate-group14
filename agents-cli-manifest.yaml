@@ -9,8 +9,8 @@ runtime:
   entrypoint: app.main:app
   python_version: '3.11'
   environment:
-    MODEL_NAME: gemini-1.5-pro-002
-    FALLBACK_MODEL_NAME: gemini-1.5-flash-002
+    MODEL_NAME: gemini-3.6-flash
+    FALLBACK_MODEL_NAME: gemini-3.6-flash
     TARGET_PROJECT: argolis-hr-agent
     MOCK_SAAS_URL: https://mock-saas.aishprabhat.demo.altostrat.com
     SWAGGER_DOCS: https://mock-saas.aishprabhat.demo.altostrat.com/docs

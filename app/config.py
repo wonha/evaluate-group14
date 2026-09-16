@@ -16,8 +16,8 @@ class Settings(BaseModel):
     region: str = os.getenv("REGION", "us-central1")
     
     # Model Configuration
-    model_name: str = os.getenv("MODEL_NAME", "gemini-1.5-pro-002")
-    fallback_model_name: str = os.getenv("FALLBACK_MODEL_NAME", "gemini-1.5-flash-002")
+    model_name: str = os.getenv("MODEL_NAME", "gemini-3.6-flash")
+    fallback_model_name: str = os.getenv("FALLBACK_MODEL_NAME", "gemini-3.6-flash")
     temperature: float = 0.0
     
     # Mock SaaS & MCP Credentials

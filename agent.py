@@ -115,7 +115,7 @@ def _init_agent():
                 logger.info('Instantiating ADK Agent with model=%s', MODEL_NAME)
                 return cls(
                     name='evaluate_group14',
-                    model=MODEL_NAME,
+                    model='gemini-3.6-flash',
                     description='Enterprise HR & IT Autonomous Multi-Agent Assistant',
                     instruction=SYSTEM_INSTRUCTION,
                     tools=TOOLS
