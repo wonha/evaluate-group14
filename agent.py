@@ -15,6 +15,9 @@ from app.tools.service_immediately import itsm_tools
 
 logger = logging.getLogger('evaluate_group14')
 
+# Model name configuration (supports gemini-2.5-flash, gemini-2.0-flash, gemini-1.5-flash)
+MODEL_NAME = os.getenv('MODEL_NAME', 'gemini-2.5-flash')
+
 def search_policy_documents(query: str) -> Dict[str, Any]:
     """Search internal HR & IT policy documents, guidelines, and benefits from the company handbook.
     
@@ -109,9 +112,10 @@ def _init_agent():
             m = __import__(pkg, fromlist=['Agent', 'LlmAgent'])
             cls = getattr(m, 'Agent', getattr(m, 'LlmAgent', None))
             if cls:
+                logger.info('Instantiating ADK Agent with model=%s', MODEL_NAME)
                 return cls(
                     name='evaluate_group14',
-                    model='gemini-1.5-pro',
+                    model=MODEL_NAME,
                     description='Enterprise HR & IT Autonomous Multi-Agent Assistant',
                     instruction=SYSTEM_INSTRUCTION,
                     tools=TOOLS
