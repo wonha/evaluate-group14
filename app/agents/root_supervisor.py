@@ -80,8 +80,10 @@ class RootSupervisorAgent:
             clean_text, out_meta = model_armor.sanitize_output(response_text)
             return {"role": "model", "response": clean_text, "guardrail": out_meta, "tool_calls": tool_calls}
 
-        # Scenario C: WorkWeek Leave PTO Query / Submit
-        if "pto" in p_lower or "leave balance" in p_lower or "vacation" in p_lower:
+        # Scenario C: WorkWeek Personal Leave / PTO Balance Query
+        is_leave_word = any(w in p_lower for w in ["pto", "vacation", "leave", "sick days", "holiday balance"])
+        is_balance_word = any(w in p_lower for w in ["balance", "left", "have remaining", "how many days do i have left", "check my", "my balance"])
+        if is_leave_word and is_balance_word:
             bal_res = workweek_tools.get_leave_balances(user_id, category="Vacation")
             tool_calls.append({"agent": "workweek_hcm_specialist", "tool": "get_leave_balances", "result": bal_res})
             bal = bal_res["data"]
