@@ -19,7 +19,7 @@ from app.tools.service_immediately import itsm_tools
 class RootSupervisorAgent(BaseParent):
     name: str = 'evaluate_group14'
     description: str = 'Enterprise HR & IT Autonomous Assistant'
-    model: str = 'gemini-1.5-pro'
+    model: str = 'gemini-3.6-flash'
     instruction: str = 'Enterprise HR & IT Assistant'
     tools: list = []
     model_fields = {'name': None, 'description': None, 'model': None, 'instruction': None, 'tools': None}

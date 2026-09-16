@@ -112,7 +112,7 @@ def _init_agent():
             if cls:
                 return cls(
                     name='evaluate_group14',
-                    model='gemini-1.5-pro',
+                    model='gemini-3.6-flash',
                     description='Enterprise HR & IT Autonomous Multi-Agent Assistant',
                     instruction=SYSTEM_INSTRUCTION,
                     tools=TOOLS

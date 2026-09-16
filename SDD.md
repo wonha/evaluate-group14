@@ -491,7 +491,7 @@ To commercially and operationally mitigate unexpected model obsolescence and mig
 |               MODEL LIFECYCLE GOVERNANCE TIMELINE (12 - 24 MONTHS)          |
 |                                                                             |
 |  [Month 0: Production Baseline]                                             |
-|  ├─ Immutable Model Pinning: `gemini-1.5-pro-002` / `gemini-1.5-flash-002`  |
+|  ├─ Immutable Model Pinning: `gemini-3.6-flash` / `gemini-3.6-flash`  |
 |  └─ ADK Abstract Model Provider Interface decouples core logic from model   |
 |                                                                             |
 |  [Month 12: Google Cloud Deprecation Notification Window]                   |
