@@ -104,7 +104,6 @@ Follow these core operational guidelines:
 """
 
 def _init_agent():
-    # 1. Try google.adk.agents.Agent / LlmAgent
     for pkg in ['google.adk.agents', 'google.adk']:
         try:
             m = __import__(pkg, fromlist=['Agent', 'LlmAgent'])
